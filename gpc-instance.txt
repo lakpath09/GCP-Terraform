@@ -1,0 +1,35 @@
+provider "google" {
+  credentials = "${file("/opt/creds/service-account.json")}"
+  project     = "devopscube-demo"
+  region      = "us-central1"
+}
+resource "google_compute_instance" "ubuntu-xenial" {
+   name = "devopscube-demo-instance"
+   machine_type = "f1-micro"
+   zone = "us-west1-a"
+   boot_disk {
+       auto_delete = false
+      initialize_params {
+      image = "ubuntu-1604-xenial-v20181023"
+      size = "30"     
+   }
+}
+network_interface {
+   network = "default"
+   access_config {}
+}
+
+metadata {
+    foo = "bar"
+}
+
+metadata_startup_script = "echo demo > /demo.txt"
+
+scheduling {
+    preemptible       = true
+  }
+
+service_account {
+   scopes = ["cloud-platform"]
+   }
+}
